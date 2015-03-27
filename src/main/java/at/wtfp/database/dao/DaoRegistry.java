@@ -2,8 +2,8 @@ package at.wtfp.database.dao;
 
 import java.sql.SQLException;
 
-import at.wtf.database.dao.jdbc.EntryDaoImpl;
 import at.wtfp.database.dao.interfaces.EntryDao;
+import at.wtfp.database.dao.jdbc.EntryDaoImpl;
 import at.wtfp.domain.Entry;
 
 import com.j256.ormlite.dao.Dao;

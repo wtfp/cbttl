@@ -1,6 +1,6 @@
 package at.wtfp.domain;
 
-import at.wtf.database.dao.jdbc.EntryDaoImpl;
+import at.wtfp.database.dao.jdbc.EntryDaoImpl;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;

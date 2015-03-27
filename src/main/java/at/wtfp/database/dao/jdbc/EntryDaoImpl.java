@@ -1,4 +1,4 @@
-package at.wtf.database.dao.jdbc;
+package at.wtfp.database.dao.jdbc;
 
 import java.sql.SQLException;
 
