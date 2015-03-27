@@ -1,23 +1,26 @@
 package at.wtfp.test.database.connection;
 
+import static org.junit.Assert.assertTrue;
 
-import java.sql.SQLException;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import at.wtfp.database.connection.ConnectionManager;
 
 public class ConnectionTest {
 
-	public static void main(String args[]){
-		new ConnectionTest();
+	private static ConnectionManager connectionManager = null;
+	
+	@BeforeClass
+	public static void runBeforeClass(){
+		connectionManager = ConnectionManager.getInstance();
+		System.out.println("bla");
 	}
 	
-	public ConnectionTest() {
-		ConnectionManager connectionManager = ConnectionManager.getInstance();
-		try {
-			connectionManager.createDatabase();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}		
+	@Test
+	public void testConnection() {
+		boolean testConnection = connectionManager.testConnection();
+		assertTrue(testConnection);
 	}
 
 }
