@@ -1,4 +1,4 @@
-package at.wtpf.database.connection;
+package at.wtfp.database.connection;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import at.wtpf.domain.Entry;
+import at.wtfp.domain.Entry;
 
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
