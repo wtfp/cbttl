@@ -14,12 +14,11 @@ public class ConnectionTest {
 	@BeforeClass
 	public static void runBeforeClass(){
 		connectionManager = ConnectionManager.getInstance();
-		System.out.println("bla");
 	}
 	
 	@Test
 	public void testConnection() {
-		boolean testConnection = connectionManager.testConnection();
+		boolean testConnection = ConnectionManager.getDaoRegistry().testConnection();
 		assertTrue(testConnection);
 	}
 

@@ -1,9 +1,11 @@
 package at.wtfp.domain;
 
+import at.wtf.database.dao.jdbc.EntryDaoImpl;
+
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-@DatabaseTable(tableName = "entry")
+@DatabaseTable(daoClass = EntryDaoImpl.class)
 public class Entry {
 	
 	//For QueryBuilder to be able to find the fields
@@ -80,9 +82,5 @@ public class Entry {
 		b.append("").append(description).append("]");
 		return b.toString();
 	}
-	
-	
-	
-	
 
 }

@@ -6,53 +6,48 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import at.wtfp.domain.Entry;
+import at.wtfp.database.dao.DaoRegistry;
 
-import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
-import com.j256.ormlite.table.TableUtils;
+import com.j256.ormlite.support.ConnectionSource;
 
 public class ConnectionManager {
-	
-	private static ConnectionManager INSTANCE = null;	
-	
-	private JdbcConnectionSource connectionSource = null;
 	
 	private final String propertiesFileName = "database.properties";
 	private Properties properties = new Properties();
 	
-	private void loadProperties() throws IOException {
-		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(propertiesFileName);
-		
-		if(inputStream != null) {
-			properties.load(inputStream);
-		} else {
-			throw new FileNotFoundException("Property file '" + propertiesFileName + "' not found on classpath");
-		}	
-	}
+	private static String dbms = null;
 	
-	private ConnectionManager() throws SQLException {
+	private static String host = null;
+	private static String port = null;
+	private static String database = null;
+	private static String user = null;
+	private static String pass = null;
+	
+	private static ConnectionManager INSTANCE = null;
+	
+	/**
+	 * Singleton
+	 * @throws SQLException
+	 * @throws IOException If database.properties were not found
+	 */
+	private ConnectionManager() throws SQLException, IOException {
+		loadProperties();
+
+		String connectionString = null;
 		try {
-			loadProperties();
-		} catch (IOException e) {
-			//TODO: Exception weiter behandeln
+			connectionString = getConnectionString(dbms);
+		} catch (Exception e) {
+			// TODO dbms not supported yet
 			e.printStackTrace();
-		}	
+		}		
 		
-		String host = getDbHost();
-		String port = getDbPort();
-		String database = getDbName();
-		String user = getDbUsername();
-		String pass = getDbPassword();
+		//Doesn't has to be Jdbc
+		ConnectionSource connectionSource = new JdbcConnectionSource(connectionString, user, pass);
 		
-		String url = getPostgresConnectionString(host, port, database);		
-		connectionSource = new JdbcConnectionSource(url, user, pass);
+		DaoRegistry.setConnectionSource(connectionSource);
 	}
 
-	/**
-	 * 
-	 * @return The Connection-Manager
-	 */
 	public static ConnectionManager getInstance() {
 		if(INSTANCE == null){
 			try {
@@ -61,12 +56,34 @@ public class ConnectionManager {
 				//TODO: Exception weiter behandeln
 				e.printStackTrace();
 				return null;
+			} catch (IOException e) {
+				//TODO: Exception weiter behandeln
+				e.printStackTrace();
 			}
 		}		
 		return INSTANCE;
 	}
-
 	
+	private void loadProperties() throws IOException {
+		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(propertiesFileName);
+		
+		if(inputStream != null) {
+			properties.load(inputStream);			
+			
+			dbms = getDbDBMS();
+			host = getDbHost();
+			port = getDbPort();
+			database = getDbName();
+			user = getDbUsername();
+			pass = getDbPassword();
+		} else {
+			throw new FileNotFoundException("Property file '" + propertiesFileName + "' not found on classpath");
+		}	
+	}
+	
+	private String getDbDBMS(){
+		return properties.getProperty("db.dbms");
+	}	
 	private String getDbHost(){
 		return properties.getProperty("db.host");
 	}
@@ -76,40 +93,50 @@ public class ConnectionManager {
 	private String getDbName(){
 		return properties.getProperty("db.name");
 	}
-
 	private String getDbUsername(){
 		return properties.getProperty("db.username");
 	}
 	private String getDbPassword(){
 		return properties.getProperty("db.password");
-	}
-	
+	}	
 	private String getDbPoolMax(){
 		return properties.getProperty("db.pool.max");
 	}
 	
-	private String getPostgresConnectionString(String host, String port, String database){
+	private String getConnectionString(String dbms) throws Exception {
+		String connectionString = null;
+		
+		switch(dbms){
+			case "postgres":
+				connectionString = getPostgresConnectionString(host, port, database);
+				break;
+			case "mysql":
+				connectionString = getMySQLConnectionString(host, port, database);
+				break;
+			default:
+				throw new Exception("DBMS not supported (yet)");
+		}
+		return connectionString;
+	}
+	
+	private static String getPostgresConnectionString(String host, String port, String database){
 		StringBuilder b = new StringBuilder();
 		b.append("jdbc:postgresql://").append(host).append(":").append(port).append("/").append(database);
 		return b.toString();
 	}
 	
-	private String getMySQLConnectionString(String host, String port, String database){
+	private static String getMySQLConnectionString(String host, String port, String database){
 		StringBuilder b = new StringBuilder();
 		b.append("jdbc:mysql://").append(host).append(":").append(port).append("/").append(database);
 		return b.toString();
 	}
-	
-	public void createDatabase() throws SQLException{
-		DaoManager.createDao(connectionSource, Entry.class);
-		TableUtils.createTable(connectionSource, Entry.class);
-	}
-	
+
 	/**
-	 * @return true if the connection source is open. Once close() has been called, this should return false.
+	 * 
+	 * @return The Dao-Registry
 	 */
-	public boolean testConnection(){
-		return connectionSource.isOpen();
+	public static DaoRegistry getDaoRegistry(){
+		return DaoRegistry.getInstance();		
 	}
 
 }
