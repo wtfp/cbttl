@@ -3,7 +3,7 @@ package at.wtfp.test.database.connection;
 import static org.junit.Assert.assertNotSame;
 
 import java.sql.SQLException;
-import java.util.Date;
+import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -21,14 +21,18 @@ public class ConnectionTest {
 	public void testCreate() {
 		int failId = -1;
 		try {
-//			DaoRegistry daoRegistry = ConnectionManager.getDaoRegistry();
-//			EntryDao entryDao = daoRegistry.getEntryDao();
-//			
-//			failId = entryDao.create(new Entry("TestEntry - " + new Date()));
+	
+			int commandsUsed = ConnectionManager.getDbUtils().createDatabase();
+			System.out.println("Commands used for DB creation: " + commandsUsed);
 			
-			failId = ConnectionManager.getDaoRegistry().getEntryDao().create(new Entry("TestEntry - " + new Date()));
+			failId = ConnectionManager.getDaoRegistry().getEntryDao().create(new Entry("HugoBanane"));
+			ConnectionManager.getDaoRegistry().getEntryDao().create(new Entry("HugoBanane"));
+			ConnectionManager.getDaoRegistry().getEntryDao().create(new Entry("HugoBanane"));
 			
-			System.out.println("HALLELUJA! Created Entry with id: [" + failId + "]");
+			List<Entry> entrysByDescription = ConnectionManager.getDaoRegistry().getEntryDao().getEntrysByDescription("HugoBanane");
+			for(Entry e : entrysByDescription)
+				System.out.println(e);
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

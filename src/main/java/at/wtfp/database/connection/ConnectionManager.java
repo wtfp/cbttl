@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import at.wtfp.database.dao.DaoRegistry;
+import at.wtfp.database.util.DbUtils;
 
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
@@ -17,12 +18,14 @@ public class ConnectionManager {
 	private static Properties properties = new Properties();
 
 	private static String dbms = null;
-
+	private static Boolean createTablesIfNotExist = null;	
+	
 	private static String host = null;
 	private static String port = null;
 	private static String database = null;
 	private static String user = null;
 	private static String pass = null;
+	
 
 	static {
 		try {
@@ -48,12 +51,13 @@ public class ConnectionManager {
 		}
 
 		// Doesn't has to be Jdbc
-		ConnectionSource connectionSource = new JdbcConnectionSource(
-				connectionString, user, pass);
+		ConnectionSource connectionSource = new JdbcConnectionSource(connectionString, user, pass);
 
 		DaoRegistry.setConnectionSource(connectionSource);
-
 		System.out.println("connectionSource set on DaoRegistry");
+		
+		DbUtils.setConnectionSource(connectionSource, createTablesIfNotExist);
+		System.out.println("connectionSource set on DbUtils");		
 	}
 
 	private static void loadProperties() throws IOException {
@@ -64,6 +68,14 @@ public class ConnectionManager {
 			properties.load(inputStream);
 
 			dbms = getDbDBMS();
+			
+			try {
+				createTablesIfNotExist = getDbCreateTAbleIfNotExists();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			host = getDbHost();
 			port = getDbPort();
 			database = getDbName();
@@ -77,6 +89,14 @@ public class ConnectionManager {
 
 	private static String getDbDBMS() {
 		return properties.getProperty("db.dbms");
+	}
+	
+	private static Boolean getDbCreateTAbleIfNotExists() throws Exception {
+		Boolean createTables = Boolean.valueOf(properties.getProperty("db.createTablesIfNotExist"));
+		if(createTables == null)
+			throw new Exception("property 'db.createTablesIfNotExist' is not a Boolean");
+		
+		return createTables;
 	}
 
 	private static String getDbHost() {
@@ -137,6 +157,14 @@ public class ConnectionManager {
 	 */
 	public static DaoRegistry getDaoRegistry() {
 		return DaoRegistry.getInstance();
+	}
+	
+	/**
+	 * 
+	 * @return The Db-Utils
+	 */
+	public static DbUtils getDbUtils(){
+		return DbUtils.getInstance();
 	}
 
 }
