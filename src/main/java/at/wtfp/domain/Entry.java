@@ -28,13 +28,11 @@ public class Entry {
 	public Entry() {
 	}	
 	
-	public Entry(int id, String description) {
-		this.id = id;
+	public Entry(String description) {
 		this.description = description;
 	}
 
-	public Entry(int id, Integer version, String description) {
-		this.id = id;
+	public Entry(Integer version, String description) {
 		this.version = version;
 		this.description = description;
 	}
