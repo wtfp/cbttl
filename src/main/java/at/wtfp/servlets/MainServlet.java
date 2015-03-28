@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class MainServlet
  */
-@WebServlet(asyncSupported = true, description = "Entry Point", urlPatterns = { "/" })
+@WebServlet(asyncSupported = true, description = "Entry Point", urlPatterns = { "/*" })
 public class MainServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -30,7 +30,17 @@ public class MainServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//Path filePath = Paths.get("/resources/");
-		System.out.println("test");		
+			
+		System.out.println("Request Pathinfo: "+request.getPathInfo());
+		String url = request.getPathInfo();
+		String[] url_split = url.split("/");
+		
+		if(url_split[0].startsWith("/"));
+			url_split[0].
+		
+		if(!urlurl_split.length > 1) 
+		String vorname = url_split[1];
+		
 		Map<String, String[]> parameterMap = request.getParameterMap();
 		for(Entry<String, String[]> entry : parameterMap.entrySet()) {
 			System.out.println("Entry key: "+entry.getKey());
@@ -40,7 +50,7 @@ public class MainServlet extends HttpServlet {
 			}
 		}
 		response.setContentType("text/html");
-		response.getWriter().println("<html><head></head><body><h1>test</h1></html>");
+		response.getWriter().println("<html><head></head><body><h1>Hallo <% name %></h1></html>".replace("<% name %>", newChar));
 	}
 
 	/**
